@@ -67,9 +67,9 @@ class heston(mcmodel):
             num_paths (int): Number of paths
             num_steps (int): NUmber of time steps
             T (float): Total duration
-            parameters (dict): 'mu','sigma','V0','kappa','theta','xi','rho' are required
+            parameters (dict): 'mu',,'V0','kappa','theta','xi','rho' are required
         """
-        required_params = {'mu','sigma','V0','kappa','theta','xi','rho'}
+        required_params = {'mu','V0','kappa','theta','xi','rho'}
         if not required_params.issubset(parameters.keys()):
             raise ValueError(f"Parameter list incomplete for model expected {required_params}")
         
@@ -77,11 +77,11 @@ class heston(mcmodel):
         self.__dict__.update(parameters)
 
 
-    def __call__(self, num_paths: int, num_steps: int, T: float):
+    def __call__(self, num_paths: int, num_steps: int, T: float,S0):
         self.num_paths = num_paths
         self.num_steps = num_steps
         self.dt = T/num_steps
-        return np.array(monte_carlo.heston(self.num_paths, self.num_steps, self.S0, self.V0, self.mu, 
+        return np.array(monte_carlo.heston(self.num_paths, self.num_steps, S0, self.V0, self.mu, 
                                            self.kappa, self.theta, self.xi, self.rho, self.dt))
 
 class bates(mcmodel):
