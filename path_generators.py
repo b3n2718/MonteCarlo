@@ -2,18 +2,21 @@ from engine import monte_carlo
 import numpy as np
 from abc import ABC, abstractmethod
 
-class mcmodel():
+class MCPathGenerator():
     def __init__(self):
         pass
     
     @abstractmethod
     def generate_paths(self) -> np.ndarray:
         pass
+    
+    def update_params(self,params):
+        self.__dict__.update(params)
 
-class gbm(mcmodel):
+class GMBPathGenerator(MCPathGenerator):
     def __init__(self, parameters: dict):
         """
-        Init function for gmb model
+        Init function for gbm model
         Args:
             num_paths (int): Number of paths
             num_steps (int): NUmber of time steps
@@ -34,7 +37,7 @@ class gbm(mcmodel):
         self.dt = T/num_steps
         return np.array(monte_carlo.gbm(self.num_paths,self.num_steps,S0, self.mu, self.sigma, self.dt))
 
-class jump_diffusion(mcmodel):
+class JumpDiffusionPathGenerator(MCPathGenerator):
     def __init__(self, parameters: dict):
         """
         Init function for jump_diffusion model
@@ -59,7 +62,7 @@ class jump_diffusion(mcmodel):
         return np.array(monte_carlo.jump_diffusion(self.num_paths,self.num_steps, self.S0, self.mu, 
                                                    self.sigma, self.mu_j, self.sigma_j, self._lambda, self.dt))
 
-class heston(mcmodel):
+class HestonPathGenerator(MCPathGenerator):
     def __init__(self, parameters: dict):
         """
         Init function for heston model
@@ -84,7 +87,7 @@ class heston(mcmodel):
         return np.array(monte_carlo.heston(self.num_paths, self.num_steps, S0, self.V0, self.mu, 
                                            self.kappa, self.theta, self.xi, self.rho, self.dt))
 
-class bates(mcmodel):
+class BatesPathGenerator(MCPathGenerator):
     def __init__(self, parameters: dict):
         """
         Init function for heston model
