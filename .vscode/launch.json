@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/d93329/Documents/CQF/PythonLibrary/MonteCarlo",
-      "program": "c:/Users/d93329/Documents/CQF/PythonLibrary/MonteCarlo/build/Debug/outDebug",
+      "cwd": "c:/Users/d93329/Documents/CQF/PythonLibrary/MonteCarlo/MonteCarlo/engine",
+      "program": "c:/Users/d93329/Documents/CQF/PythonLibrary/MonteCarlo/MonteCarlo/engine/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
