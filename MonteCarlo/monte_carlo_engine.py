@@ -1,10 +1,10 @@
-from payoff import Payoff
+from .payoff import Payoff
 import numpy as np
-import path_generators
+from .path_generators import *
 import copy
 
 class MonteCarloEngine:
-    def __init__(self, model: path_generators.mcmodel, payoff: Payoff, T: float, n_paths: int, n_steps: int, riskfreerate: float, S0:float):
+    def __init__(self, model: MCPathGenerator, payoff: Payoff, T: float, n_paths: int, n_steps: int, riskfreerate: float, S0:float):
         self.model = model
         self.payoff = payoff
         self.T = T
@@ -41,7 +41,7 @@ class MonteCarloEngine:
         greeks['gamma'] = (self.price(self.S0+dS)+self.price(self.S0-dS)-2*self.price(self.S0))/(dS*dS)
         
         #vega
-        if isinstance(self.model,path_generators.gbm) or isinstance(self.model,path_generators.jump_diffusion):
+        if isinstance(self.model,GBMPathGenerator) or isinstance(self.model,JumpDiffusionPathGenerator):
             dsigma=base_model_param_copy['sigma']*0.01
             model_param_copy['sigma'] = base_model_param_copy['sigma'] + dsigma
             self.model.update_params(model_param_copy)
@@ -51,7 +51,7 @@ class MonteCarloEngine:
             vm=self.price()
 
             greeks['vega'] = (vp-vm)/(2*dsigma)
-        elif isinstance(self.model,path_generators.heston) or isinstance(self.model,path_generators.bates):
+        elif isinstance(self.model,HestonPathGenerator) or isinstance(self.model,BatesPathGenerator):
             dsigma=base_model_param_copy['V0']*0.01
             model_param_copy['V0'] = base_model_param_copy['V0'] + dsigma
             self.model.update_params(model_param_copy)

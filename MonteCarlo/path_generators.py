@@ -1,4 +1,4 @@
-from engine import monte_carlo
+from .engine import monte_carlo
 import numpy as np
 from abc import ABC, abstractmethod
 
@@ -13,7 +13,7 @@ class MCPathGenerator():
     def update_params(self,params):
         self.__dict__.update(params)
 
-class GMBPathGenerator(MCPathGenerator):
+class GBMPathGenerator(MCPathGenerator):
     def __init__(self, parameters: dict):
         """
         Init function for gbm model
