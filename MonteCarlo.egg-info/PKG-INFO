@@ -2,7 +2,7 @@ Metadata-Version: 2.1
 Name: MonteCarlo
 Version: 0.1.0
 Summary: Monte Carlo Library with multiple equity models
-Author: Dein Name
+Author: Benedict Hasenauer
 Author-email: Benedict Hasenauer <benedict.hasenauer@gmail.com>
 Requires-Python: >=3.8
 Requires-Dist: numpy

@@ -14,7 +14,7 @@ ext_modules = [
 setup(
     name='MonteCarlo',
     version='0.1',
-    author='Dein Name',
+    author='Benedict Hasenauer',
     description='Monte Carlo Library with multiple equity models',
     packages=find_packages(),
     ext_modules=ext_modules,

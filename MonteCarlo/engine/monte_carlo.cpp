@@ -2,6 +2,7 @@
 #include <pybind11/numpy.h>
 #include <random>
 #include <omp.h>
+#include <iostream>
 
 namespace py = pybind11;
 
@@ -15,12 +16,41 @@ py::array_t<double> monte_carlo_gbm(int num_paths, int num_steps, double S0, dou
     auto result = py::array_t<double>({num_paths, num_steps});
     auto r = result.mutable_unchecked<2>();
 
-    #pragma omp parallel for
     for (int i = 0; i < num_paths; ++i) {
         double S = S0;
         for (int j = 0; j < num_steps; ++j) {
             S *= exp((mu - 0.5 * sigma * sigma) * dt + sigma * sqrt(dt) * d(gen));
             r(i, j) = S;
+        }
+    }
+
+    return result;
+}
+
+py::array_t<double> monte_carlo_gbm_parallel(int num_paths, int num_steps, double S0, double mu, double sigma, double dt) {
+    // Schritt 1: Speicher anlegen (GIL aktiv)
+    py::array_t<double> result({num_paths, num_steps});
+    py::buffer_info buf = result.request();
+    double* data = static_cast<double*>(buf.ptr);
+
+    // Schritt 2: Parallele Simulation (GIL freigeben)
+    py::gil_scoped_release release;
+ 
+    #pragma omp parallel
+    {
+        // Thread-lokaler Zufallszahlengenerator
+        std::random_device rd;
+        std::mt19937 gen(rd() + omp_get_thread_num());
+        std::normal_distribution<> d(0.0, 1.0);
+        std::cout << omp_get_num_threads();
+        #pragma omp for
+        for (int i = 0; i < num_paths; ++i) {
+            double S = S0;
+            for (int j = 0; j < num_steps; ++j) {
+                double z = d(gen);
+                S *= exp((mu - 0.5 * sigma * sigma) * dt + sigma * sqrt(dt) * z);
+                data[i * num_steps + j] = S;
+            }
         }
     }
 
@@ -164,6 +194,9 @@ PYBIND11_MODULE(monte_carlo, m) {
     m.def("gbm", &monte_carlo_gbm, "Monte Carlo Simulation for GBM",
           py::arg("num_paths"), py::arg("num_steps"), py::arg("S0"),
           py::arg("mu"), py::arg("sigma"), py::arg("dt"));
+    m.def("gbm_parallel", &monte_carlo_gbm_parallel, "Monte Carlo Simulation for GBM",
+        py::arg("num_paths"), py::arg("num_steps"), py::arg("S0"),
+        py::arg("mu"), py::arg("sigma"), py::arg("dt"));
     m.def("jump_diffusion", &monte_carlo_jump_diffusion, "Monte Carlo Simulation for Merton Jump Diffusion",
         py::arg("num_paths"), py::arg("num_steps"), py::arg("S0"),
         py::arg("mu"), py::arg("sigma"),py::arg("mu_j"), py::arg("sigma_j"),py::arg("lambda"), py::arg("dt"));

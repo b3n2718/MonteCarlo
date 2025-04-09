@@ -1,6 +1,8 @@
 from .engine import monte_carlo
 import numpy as np
 from abc import ABC, abstractmethod
+import concurrent.futures
+import multiprocessing as mp
 
 class MCPathGenerator():
     def __init__(self):
@@ -12,6 +14,9 @@ class MCPathGenerator():
     
     def update_params(self,params):
         self.__dict__.update(params)
+
+def simulate_chunk(num_paths,num_steps,S0, mu, sigma, dt):
+    return np.array(monte_carlo.gbm(num_paths,num_steps,S0, mu, sigma, dt))  
 
 class GBMPathGenerator(MCPathGenerator):
     def __init__(self, parameters: dict):
@@ -31,11 +36,33 @@ class GBMPathGenerator(MCPathGenerator):
         self.__dict__.update(parameters)
 
 
-    def __call__(self, num_paths: int, num_steps: int, T: float,S0: float):
+
+    def __call__(self, num_paths: int, num_steps: int, T: float,S0: float, parallel=False, n_processes=None):
         self.num_paths = num_paths
         self.num_steps = num_steps
         self.dt = T/num_steps
-        return np.array(monte_carlo.gbm(self.num_paths,self.num_steps,S0, self.mu, self.sigma, self.dt))
+        if parallel:
+            if n_processes is None:
+                n_processes = mp.cpu_count()
+                
+            chunk_size = num_paths // n_processes
+            remainder = num_paths % n_processes
+
+            chunk_sizes = [chunk_size] * n_processes
+            for i in range(remainder):
+                chunk_sizes[i] += 1  # verteile die restlichen Pfade   
+            args = [(chunk_sizes[i], self.num_steps,S0, self.mu, self.sigma, self.dt) for i in range(n_processes)]
+            
+          
+            
+            with concurrent.futures.ProcessPoolExecutor() as executor:
+                futures = [executor.submit(simulate_chunk, *arg) for arg in args]
+                results = [f.result() for f in futures]
+                    
+
+            return np.vstack(results)
+        else:
+            return np.array(monte_carlo.gbm(self.num_paths,self.num_steps,S0, self.mu, self.sigma, self.dt))
 
 class JumpDiffusionPathGenerator(MCPathGenerator):
     def __init__(self, parameters: dict):
@@ -115,4 +142,3 @@ class BatesPathGenerator(MCPathGenerator):
 def varaince_gamma():
     pass
     
-
