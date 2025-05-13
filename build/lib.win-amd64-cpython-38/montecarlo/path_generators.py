@@ -97,7 +97,7 @@ class HestonPathGenerator(MCPathGenerator):
             num_paths (int): Number of paths
             num_steps (int): NUmber of time steps
             T (float): Total duration
-            parameters (dict): 'mu',,'V0','kappa','theta','xi','rho' are required
+            parameters (dict): 'mu','V0','kappa','theta','xi','rho' are required
         """
         required_params = {'mu','V0','kappa','theta','xi','rho'}
         if not required_params.issubset(parameters.keys()):
@@ -122,9 +122,9 @@ class BatesPathGenerator(MCPathGenerator):
             num_paths (int): Number of paths
             num_steps (int): NUmber of time steps
             T (float): Total duration
-            parameters (dict): 'mu','sigma','V0','kappa','theta','xi','rho','mu_j','sigma_j','_lambda' are required
+            parameters (dict): 'mu',''V0','kappa','theta','xi','rho','mu_j','sigma_j','_lambda' are required
         """
-        required_params = {'mu','sigma','V0','kappa','theta','xi','rho','mu_j','sigma_j','_lambda'}
+        required_params = {'mu','V0','kappa','theta','xi','rho','mu_j','sigma_j','_lambda'}
         if not required_params.issubset(parameters.keys()):
             raise ValueError(f"Parameter list incomplete for model expected {required_params}")
         

@@ -36,7 +36,6 @@ class GBMPathGenerator(MCPathGenerator):
         self.__dict__.update(parameters)
 
 
-
     def __call__(self, num_paths: int, num_steps: int, T: float,S0: float, parallel=False, n_processes=None):
         self.num_paths = num_paths
         self.num_steps = num_steps
@@ -113,6 +112,7 @@ class HestonPathGenerator(MCPathGenerator):
         self.dt = T/num_steps
         return np.array(monte_carlo.heston(self.num_paths, self.num_steps, S0, self.V0, self.mu, 
                                            self.kappa, self.theta, self.xi, self.rho, self.dt))
+
 
 class BatesPathGenerator(MCPathGenerator):
     def __init__(self, parameters: dict):

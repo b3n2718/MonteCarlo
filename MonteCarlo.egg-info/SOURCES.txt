@@ -12,4 +12,3 @@ montecarlo/__init__.py
 montecarlo/monte_carlo_engine.py
 montecarlo/path_generators.py
 montecarlo/payoff.py
-montecarlo/test.py
